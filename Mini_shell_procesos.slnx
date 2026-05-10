@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Mini_shell_procesos/Mini_shell_procesos.vcxproj" />
+  <Project Path="Mini_shell_procesos/Mini_shell_procesos.vcxproj" Id="9a5ff9ca-4f23-470b-9ed8-74b0b9ce0f87" />
 </Solution>

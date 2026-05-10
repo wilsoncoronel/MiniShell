@@ -12,6 +12,8 @@ e) Muestre un historial de los últimos 5 comandos ejecutados
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <cctype>
+#include <algorithm>
 
 using namespace std;
 struct Proceso {
@@ -54,8 +56,14 @@ public:
     }
 
     void listarProcesos() {
-        for (auto& proce : tabla_procesos) {
-            cout << "PID: " << proce.pid << ", " << proce.nombre << ", " << proce.memoria << ", " << proce.estado << endl;
+        if (tabla_procesos.size() == 0) {
+            cout << "NO existen procesos en la tabla de procesos!!" << endl;
+
+        }
+        else {
+            for (auto& proce : tabla_procesos) {
+                cout << "PID: " << proce.pid << ", " << proce.nombre << ", " << proce.memoria << ", " << proce.estado << endl;
+            }
         }
     }
 
@@ -122,52 +130,53 @@ public:
         cout << "\n====================================================================" << endl;
         listarOpciones();
         string opc;
-        cout << "Ingrese una opcion para continuar: " << endl;
-        cin >> opc;
-        while (opc.size() > 0) {
+       
+        while (true) {
+            cout << "Ingrese una opcion para continuar: " << endl;
+            cin >> opc;
+            std::transform(opc.begin(), opc.end(), opc.begin(), [](unsigned char c) {
+                return std::toupper(c);
+                });
             if (opc == "PS") {
-                    listarProcesos();
-                    break;
-                }
-                else if (opc == "Kill") {
-                    int pid = 0;
-                    cout << "Ingrese el pid a eliminar: " << endl;
-                    cin >> pid;
-                    if (pid > 0) {
-                        eliminarProcesos(pid);
-                    }
-                    else {
-                        cout << "No permitido" << endl;
-                        listarOpciones();
-                        cout << "Ingrese una opcion para continuar: " << endl;
-                        cin >> opc;
-                    }
-                    break;
-                }
-                else if (opc == "New") {
-                    string nombre;
-                    int memoria_kb;
-                    cout << "Ingrese el nombre del nuevo proceso: " << endl;
-                    cin >> nombre;
-                    cout << "Ingrese el tamano en memoria a usar: " << endl;
-                    cin >> memoria_kb;
-                    crearProceso(nombre, memoria_kb, 0.0);
-                    break;
-                }
-                else if (opc == "MEM") {
-                    MostrarEstadoSO();
-                    break;
-                }
-                else if (opc == "Exit") {
-                    cout << "Terminando la shell......" << endl;
-                    opc = "";
+                listarProcesos();
+            }
+            else if(opc == "KILL"){
+                int pid = 0;
+                cout << "Ingrese el PID a eliminar: " << endl;
+                cin >> pid;
+                if (pid > 0) {
+                    eliminarProcesos(pid);
                 }
                 else {
-                    cout << "Opcion invalida" << endl;
+                    cout << "No permitido" << endl;
                     listarOpciones();
-                    cout << "Ingrese una opcion para continuar: " << endl;
-                    cin >> opc;
+                    
                 }
+            }
+            else if (opc == "NEW") {
+                string nombre = "";
+                cout << "Ingrese el nombre: " << endl;
+                cin >> nombre;
+                int memoria_kb = 0;
+                cout << "Ingrese memoria del proceso: " << endl;
+                cin >> memoria_kb;
+                double cpu_pct;
+                cout << "Ingrese el % de cpu: " << endl;
+                cin >> cpu_pct;
+                int pid = crearProceso(nombre, memoria_kb,cpu_pct);
+            }
+            
+            else if (opc == "MEM") {
+                MostrarEstadoSO();
+            }  
+            else if (opc == "EXIT") {
+                cout << "Terminando la shell......" << endl;
+                break;
+            }
+            else {
+                cout << "Opcion invalida" << endl;
+                listarOpciones();
+            }
         }
     }
 };
